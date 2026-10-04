@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "stubbleburning-dashboard",
+  "private_key_id": "cc9dc95beae393e390ff8923b497a78b1b146f4d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCmITtWE0e7MyvW\nlkMDmjSAfE9AloadWT6vPVRcvd3dMuTTCuRzY/yKGNbUxuJ4KPRsJyFS3h3DcoZo\n//ZI0cnDFus85A0nvxKoNIZnW/BPuwFBlLSGeqqsSrAa+qh07alBabec8N4cC6tz\nv2YzXbwy802K8Oc2E+NUZ1gChjLXiPBurq4WxqCikb0iuqkhCCVozL43sLV5bT+T\nR20PmUp4QKa1B8wc6CtpQU+9ZdfH4gMBVVgf1fYptXnKhdyDKOnITMF6JLZF7P7M\naRAPjwdRX5htX95NKY2EyD3WW/CcpMjzZrHIHtRT56pIJNfi5GzgzNmA/+zXm/Ri\nCBD0hWWrAgMBAAECggEAApOkYHbnF2u5Q9hLzMwBAXcsIYPULa+bLculOdUGEm6+\nJtnV5kZIPfoZpu44yAVWmTDYLvlb+9KUbB+AOevrFbgOyQB+hb3Mc8hwxzyhUxNC\n9znvvOA9MnPsHFcD8uBWzjluDCSeRVAXBjITSzuqdh3Y9406ANg5H++EaXGca0Rh\nlGwA8/1wksIlwfcoT1O//H1ZqbYc/N9/KNtHEZn0vluuUdClX9hthALBT+WrAF/S\n3ETKujWOSpBLbFRTXe+Qpg4Z0xPQEm/3yS9bZ5uLGTGf6q/DZl+b9FRTvrIB7Wjy\nZsOIWLS8s1ncsRkoYRd6I1c/oOh0AY5W7YlGbFOfEQKBgQDRGTT8yoUYKVWneWtW\n008ExV911Q+YXQc2U1lRrINP6YHmmoNMLn0ri12B/eaVuqn8zfHhl+xBvH51d8Ki\n0sZv9KvhMmu0twgmyDpzRlCC1Jjf/TJrvdp/B2rMhXOvjb5+5BXzAMavDJScmSaB\nWEEJ9V+yPz06sLWknLBpxqdyOwKBgQDLZLDgxawMI20QeFjyu4MnYLqvwH9xOwBo\nnB77z5/nFiFtwF2q/7gZUYtTL/NiRu9vEhtPfqY12DorE3yo0AIfwxHb0/csj4Nz\nHTRh3QbvFXa7Ycbsy7/M5lAzvADnbB0c7TUDuViMAk2gxVHUhuWQTCnK6poLbbT0\nQbPWoFGzUQKBgEbXv3gWNVmmR3riTFeyaAc5x8noUcxRWGwzeQOO6z5b4sL6fpmE\n9quWICw2lbUM9SLNs7G3AziSYFX0KWF4//pWbxVxO8SSbpSVKhh8LjLlTJY29qpC\nPJDlNm3smPFVmMDtDfKyxJ3yKTeVO9J+0CpLlAyUGG6WCDSpUavEvl6ZAoGAI6fu\nPilJJQOc3hNK/JqUvnV9pMvpS49dXflokRpv3NILYDMl+JFF0+Jwu0+fqi3nUaBp\n+0CnoK7cW6rZ4ro8dRb8bX42SbCLCcYn5bQawBUSMH1OozqA0Enb64Xc3rUcUXLg\nJVv7wuewdivBUbGoUuiXNwRzpuc/nsZZ4ZlPWVECgYAf7Q45g67pOFbkVjaTvFNW\nvYOWATNtSSo1/y62fyPehgnH3/zwYBbuthQEeKYRvYIf5/c3kx/qSvE42K8GU7hR\nMdS4gA4WBotrqtiiY1ZliXCWe5GS/ysiVyxt6287fAe7H3S1WPMfQFtXASw7MIkH\n669kz7vtkBlm5MP2EcmMLg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "stubbleburning-dashboard@stubbleburning-dashboard.iam.gserviceaccount.com",
+  "client_id": "117551097555932474948",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/stubbleburning-dashboard%40stubbleburning-dashboard.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

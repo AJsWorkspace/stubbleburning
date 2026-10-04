@@ -1,0 +1,13 @@
+pip install --upgrade pip
+pip install \
+earthengine-api \
+geemap \
+Flask \
+Flask-Cors \
+pandas \
+numpy \
+google-api-python-client \
+google-auth \
+google-auth-httplib2 \
+google-auth-oauthlib \
+requests

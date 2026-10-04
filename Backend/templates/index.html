@@ -1,0 +1,45 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stubble Burning Monitoring System</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- Background Video -->
+
+    <video autoplay muted loop id="bg-video">
+        <source src="static/42084-431423022.mp4" type="video/mp4">
+    </video>
+
+    <!-- Dark Overlay -->
+
+    <div class="overlay"></div>
+
+    <!-- Logo -->
+
+    <img src="/static/logo.png" class="logo" alt="Logo">
+
+    <!-- Main Content -->
+
+    <div class="content">
+
+        <h1 id="title"></h1>
+
+        <p>
+            Module 1: Satellite-Derived Burnt Area Mapping
+        </p>
+
+        <button onclick="startAnalysis()">
+            Start Analysis
+        </button>
+
+    </div>
+
+    <script src="/static/script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Burnt Area Dashboard</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f4f6f9;
+    color:#2c3e50;
+    line-height:1.5;
+}
+
+.header-banner img{
+    width:100%;
+    display:block;
+}
+
+.main-container{
+    width:99%;
+    max-width: 1800px;
+    margin:18px auto;
+}
+
+.top-section{
+    display:flex;
+    gap:20px;
+    align-items: flex-start;
+}
+
+.map-box{
+    flex:7;
+    background:#fff;
+    padding:24px;
+    border-radius:16px;
+    box-shadow:0px 6px 20px rgba(0,0,0,0.08);
+}
+
+.status-message{
+
+    margin-top:15px;
+    padding:12px;
+
+    border-radius:6px;
+
+    font-weight:500;
+
+    display:none;
+
+}
+
+.status-success{
+
+    background:#e8f5e9;
+    color:#2e7d32;
+    border:1px solid #81c784;
+
+}
+
+.status-error{
+
+    background:#ffebee;
+    color:#c62828;
+    border:1px solid #ef5350;
+
+}
+
+.status-info{
+
+    background:#e3f2fd;
+    color:#1565c0;
+    border:1px solid #64b5f6;
+
+}
+
+.control-panel{
+    flex:3;
+    background:#fff;
+    padding:28px;
+    border-radius:16px;
+    box-shadow:0px 6px 20px rgba(0,0,0,0.08);
+
+    display:flex;
+    flex-direction:column;
+}
+
+.control-panel h2,
+.map-box h2{
+    text-align:center;
+    margin-bottom:24px;
+    color:#0d47a1;
+    font-size:1.5rem;
+    font-weight:700;
+    letter-spacing:0.3px;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-size:15px;
+    font-weight:600;
+    color:#374151;
+}
+
+select,
+input{
+    width:100%;
+    padding:12px 14px;
+    margin-bottom:18px;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+    font-size:15px;
+    background:#fff;
+    transition:0.2s;
+}
+
+select:focus,
+input:focus{
+    outline:none;
+    border-color:#1565c0;
+    box-shadow:0 0 0 3px rgba(21,101,192,0.15);
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#0d47a1;
+    color:#fff;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.25s ease;
+}
+
+button:hover{
+    background:#1565c0;
+    transform:translateY(-2px);
+    box-shadow:0 6px 14px rgba(21,101,192,0.25);
+}
+
+#map{
+    height:760px;
+    width:100%;
+    border-radius:12px;
+}
+
+#mouse-position{
+    margin-top:12px;
+    text-align:center;
+    font-size:14px;
+    color:#4b5563;
+    font-weight:500;
+}
+
+.report-section{
+    display:none;
+    margin-top:30px;
+}
+
+.report-card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0px 2px 10px rgba(0,0,0,0.1);
+}
+
+.stat-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    margin-top:20px;
+}
+
+.stat-box{
+    background:#eef4ff;
+    padding:20px;
+    text-align:center;
+    border-radius:10px;
+}
+
+.stat-box h3{
+    color:#0d47a1;
+}
+
+.stat-box p{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.processing-box{
+    margin-top:20px;
+    padding:15px;
+    min-height:120px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    background:#f8f9fa;
+    font-size:15px;
+    line-height:1.8;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header-banner">
+    <img src="/static/header line.png">
+</div>
+
+<div class="main-container">
+
+<div class="top-section">
+
+<div class="map-box">
+
+    <h2>Area Of Interest (AOI)</h2>
+
+    <div id="map"></div>
+
+    <div id="mouse-position">
+        Latitude: -- | Longitude: --
+    </div>
+
+</div>
+
+<div id="statusMessage" class="status-message" style="display:none;"></div>
+
+<div class="control-panel">
+
+    <h2>Analysis Parameters</h2>
+
+    <label>Select State</label>
+
+    <select id="stateSelect"
+onchange="populateDistricts();loadStateBoundary()">
+
+    </select>
+
+<label>Select District</label>
+
+<select id="districtSelect">
+
+    <option value="">
+        Select District
+    </option>
+
+</select>
+
+   <label>Select Year</label>
+
+<select id="year">
+
+<option value="">Select Year</option>
+
+<option>2026</option>
+<option>2025</option>
+<option>2024</option>
+<option>2023</option>
+<option>2022</option>
+<option>2021</option>
+<option>2020</option>
+<option>2019</option>
+<option>2018</option>
+<option>2017</option>
+
+</select>
+
+<label>Select Season</label>
+
+<select id="season">
+
+    <option value="">
+        Select Season
+    </option>
+
+    <option value="Kharif">
+        Kharif
+    </option>
+
+    <option value="Rabi">
+        Rabi
+    </option>
+
+</select>
+
+<div class="parameter-group">
+
+    <label for="cropMask">
+        Crop Mask
+    </label>
+
+    <select id="cropMask">
+
+        <option value="Agriculture Mask">
+            Agriculture Mask
+        </option>
+
+        <option value="Wheat Mask">
+            Wheat Mask
+        </option>
+
+        <option value="Rice Mask">
+            Rice Mask
+        </option>
+
+        <option value="Sugarcane Mask">
+            Sugarcane Mask
+        </option>
+
+    </select>
+
+</div>
+
+<label>Duration</label>
+
+<select id="duration" onchange="durationChanged()">
+
+    <option value="">
+        Select Duration
+    </option>
+
+    <option value="single_date">
+        Single-Date Analysis
+    </option>
+
+    <option value="multi_date">
+        Multi-Date Analysis
+    </option>
+
+</select>
+
+<div class="parameter-group">
+
+    <label for="outputProduct">
+        Output Products
+    </label>
+
+    <select id="outputProduct">
+
+        <option value="none">
+            None
+        </option>
+
+        <option value="csv">
+            CSV Statistics
+        </option>
+
+        <option value="tiff">
+            GeoTIFF
+        </option>
+
+        <option value="both">
+            CSV Statistics + GeoTIFF
+        </option>
+
+    </select>
+
+</div>
+
+<!-- Hidden initially -->
+<div id="dateSection" style="display:none; margin-top:15px;">
+
+    <!-- Single-Date Analysis -->
+
+    <div id="latestDateDiv">
+
+        <label>Select Observation Date</label>
+
+        <select id="availableDate">
+
+            <option value="">
+                Select Observation Date
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- Multi-Date Analysis -->
+
+    <div id="seasonDateDiv" style="display:none;">
+
+        <label>Start Date</label>
+
+        <select id="startDate">
+
+            <option value="">
+                Select Start Date
+            </option>
+
+        </select>
+
+        <br><br>
+
+        <label>End Date</label>
+
+        <select id="endDate">
+
+            <option value="">
+                Select End Date
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+<button onclick="handleGo()">
+    GO
+</button>
+
+<!-- We will use this in the next step -->
+
+<button
+id="generateBtn"
+style="display:none;"
+onclick="generateSelectedDate()">
+
+Generate Report
+
+</button>
+
+<div id="processing-status" class="processing-box">
+    Waiting for analysis...
+</div>
+
+</div>
+
+</div>
+
+<div class="report-section" id="report">
+
+<div class="report-card">
+
+<h2>Burnt Area Statistical Report</h2>
+
+<p><b>State:</b> <span id="rstate"></span></p>
+
+<p><b>District:</b> <span id="rdistrict"></span></p>
+
+<p><b>Year:</b> <span id="ryear"></span></p>
+
+<p><b>Duration:</b> <span id="rduration"></span></p>
+
+<p><b>Crop Mask:</b> <span id="rcropmask"></span></p>
+
+<p><b>Season:</b> <span id="rseason"></span></p>
+
+<p><b>Latest Date:</b> <span id="rlatestdate"></span></p>
+
+<p><b>Avg Cloud Cover (%):</b> <span id="ravgcloud"></span></p>
+
+<p><b>Burnt Area (ha):</b> <span id="rburntarea_text"></span></p>
+
+
+
+</div>
+<div style="margin-top:20px; text-align:center;">
+
+    <button
+    id="downloadPngBtn"
+    style="display:none; width:250px;">
+
+    Download Burnt Area PNG
+
+    </button>
+
+</div>
+</div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+const states = [
+
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Delhi",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal"
+
+];
+
+const districts = {
+
+"Punjab":[
+
+  "Amritsar",
+  "Barnala",
+  "Bathinda",
+  "Faridkot",
+  "Fatehgarh Sahib",
+  "Fazilka",
+  "Firozpur",
+  "Gurdaspur",
+  "Hoshiarpur",
+  "Jalandhar",
+  "Kapurthala",
+  "Ludhiana",
+  "Malerkotla",
+  "Mansa",
+  "Moga",
+  "Sri Muktsar Sahib",
+  "Pathankot",
+  "Patiala",
+  "Rupnagar",
+  "Sahibzada Ajit Singh Nagar",
+  "Sangrur",
+  "Shaheed Bhagat Singh Nagar",
+  "Tarn Taran"
+
+],
+
+"Haryana":[
+
+  "Ambala",
+  "Bhiwani",
+  "Charkhi Dadri",
+  "Faridabad",
+  "Fatehabad",
+  "Gurugram",
+  "Hisar",
+  "Jhajjar",
+  "Jind",
+  "Kaithal",
+  "Karnal",
+  "Kurukshetra",
+  "Mahendragarh",
+  "Nuh",
+  "Palwal",
+  "Panchkula",
+  "Panipat",
+  "Rewari",
+  "Rohtak",
+  "Sirsa",
+  "Sonipat",
+  "Yamunanagar"
+
+],
+
+"Delhi":[
+    "Central Delhi",
+    "Central North Delhi",
+    "East Delhi",
+    "New Delhi",
+    "North Delhi",
+    "North East Delhi",
+    "North West Delhi",
+    "Old Delhi",
+    "Outer North Delhi",
+    "South Delhi",
+    "South East Delhi",
+    "South West Delhi",
+    "West Delhi"
+],
+
+"Maharashtra":[
+
+  "Ahmednagar",
+  "Akola",
+  "Amravati",
+  "Beed",
+  "Bhandara",
+  "Buldhana",
+  "Chandrapur",
+  "Chhatrapati Sambhajinagar",
+  "Dharashiv",
+  "Dhule",
+  "Gadchiroli",
+  "Gondia",
+  "Hingoli",
+  "Jalgaon",
+  "Jalna",
+  "Kolhapur",
+  "Latur",
+  "Mumbai City",
+  "Mumbai Suburban",
+  "Nagpur",
+  "Nanded",
+  "Nandurbar",
+  "Nashik",
+  "Palghar",
+  "Parbhani",
+  "Pune",
+  "Raigad",
+  "Ratnagiri",
+  "Sangli",
+  "Satara",
+  "Sindhudurg",
+  "Solapur",
+  "Thane",
+  "Wardha",
+  "Washim",
+  "Yavatmal"
+
+],
+
+"Madhya Pradesh":[
+  "Agar Malwa",
+  "Alirajpur",
+  "Anuppur",
+  "Ashoknagar",
+  "Balaghat",
+  "Barwani",
+  "Betul",
+  "Bhind",
+  "Bhopal",
+  "Burhanpur",
+  "Chhatarpur",
+  "Chhindwara",
+  "Damoh",
+  "Datia",
+  "Dewas",
+  "Dhar",
+  "Dindori",
+  "Guna",
+  "Gwalior",
+  "Harda",
+  "Indore",
+  "Jabalpur",
+  "Jhabua",
+  "Katni",
+  "Khandwa",
+  "Khargone",
+  "Maihar",
+  "Mandla",
+  "Mandsaur",
+  "Morena",
+  "Narmadapuram",
+  "Narsinghpur",
+  "Neemuch",
+  "Niwari",
+  "Pandhurna",
+  "Panna",
+  "Raisen",
+  "Rajgarh",
+  "Ratlam",
+  "Rewa",
+  "Sagar",
+  "Satna",
+  "Sehore",
+  "Seoni",
+  "Shahdol",
+  "Shajapur",
+  "Sheopur",
+  "Shivpuri",
+  "Sidhi",
+  "Singrauli",
+  "Tikamgarh",
+  "Ujjain",
+  "Umaria",
+  "Vidisha"
+
+]
+
+};
+
+const stateSelect =
+document.getElementById("stateSelect");
+
+let defaultOption =
+document.createElement("option");
+
+defaultOption.value = "";
+
+defaultOption.text =
+"Select State";
+
+defaultOption.selected = true;
+
+stateSelect.add(defaultOption);
+
+states.forEach(state=>{
+
+let option =
+document.createElement("option");
+
+option.value = state;
+option.text = state;
+
+stateSelect.add(option);
+
+});
+
+
+
+function populateDistricts(){
+
+    let selectedState =
+    document.getElementById("stateSelect").value;
+
+    let districtSelect =
+    document.getElementById("districtSelect");
+
+    /* Clear old districts */
+
+    districtSelect.innerHTML = "";
+
+    /* Default option */
+
+    let defaultDistrict =
+    document.createElement("option");
+
+    defaultDistrict.value = "";
+    defaultDistrict.text = "Select District";
+
+    districtSelect.add(defaultDistrict);
+
+    /* -------- NEW -------- */
+
+    let allDistricts =
+    document.createElement("option");
+
+    allDistricts.value = "All Districts";
+    allDistricts.text = "All Districts";
+
+    districtSelect.add(allDistricts);
+
+    /* --------------------- */
+
+    if(districts[selectedState]){
+
+        districts[selectedState].forEach(function(district){
+
+            let option =
+            document.createElement("option");
+
+            option.value = district;
+            option.text = district;
+
+            districtSelect.add(option);
+
+        });
+
+    }
+
+}
+
+function loadStateBoundary(){
+
+    let selectedState =
+        document.getElementById("stateSelect").value;
+
+
+    // =====================================================
+    // REMOVE CURRENT STATE BOUNDARY
+    // =====================================================
+
+    if(stateLayer){
+        map.removeLayer(stateLayer);
+    }
+
+
+    // =====================================================
+    // LOAD STATE + DISTRICT DATA
+    // =====================================================
+
+    Promise.all([
+
+        fetch('/static/India_State.json')
+            .then(response => response.json()),
+
+        fetch('/static/India_Dist.geojson')
+            .then(response => response.json())
+
+    ])
+
+    .then(([stateData, districtData]) => {
+
+
+        // =================================================
+        // STATE BOUNDARY
+        // =================================================
+
+        stateLayer = L.geoJSON(stateData, {
+
+            filter:function(feature){
+
+                return (
+                    feature.properties.STATE.toUpperCase()
+                    ===
+                    selectedState.toUpperCase()
+                );
+
+            },
+
+            style:{
+                color:'#0066ff',
+                weight:2,
+                fillColor:'#66b3ff',
+                fillOpacity:0.15
+            },
+
+            onEachFeature:function(feature,layer){
+
+                layer.bindTooltip(
+                    feature.properties.STATE,
+                    {
+                        permanent:false
+                    }
+                );
+
+            }
+
+        }).addTo(map);
+
+        // =================================================
+        // FIT MAP TO STATE
+        // =================================================
+
+        if(stateLayer.getLayers().length > 0){
+
+            map.fitBounds(
+                stateLayer.getBounds()
+            );
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.log(
+            "GeoJSON Error:",
+            error
+        );
+
+    });
+
+}
+
+function toggleDateDropdown(){
+
+    let duration = document.getElementById("duration").value;
+
+    let section = document.getElementById("dateSection");
+
+    if(duration === "single_date"){
+
+        section.style.display = "block";
+
+    }
+
+    else{
+
+        section.style.display = "none";
+
+    }
+
+}
+
+async function durationChanged(){
+
+    const duration =
+    document.getElementById("duration").value;
+
+    const dateSection =
+    document.getElementById("dateSection");
+
+    const latestDateDiv =
+    document.getElementById("latestDateDiv");
+
+    const seasonDateDiv =
+    document.getElementById("seasonDateDiv");
+
+    const dateDropdown =
+    document.getElementById("availableDate");
+
+    /* Hide everything */
+
+    if(duration === ""){
+
+        dateSection.style.display = "none";
+        return;
+
+    }
+
+    dateSection.style.display = "block";
+
+    /* ---------- Single-Date Analysis ---------- */
+
+    if(duration === "single_date"){
+
+        latestDateDiv.style.display = "block";
+        seasonDateDiv.style.display = "none";
+
+    }
+
+    /* ---------- Multi-Date Analysis ---------- */
+
+    else{
+
+        latestDateDiv.style.display = "none";
+        seasonDateDiv.style.display = "block";
+
+    }
+
+    const state = 
+    document.getElementById("stateSelect").value;
+    
+    const district =
+    document.getElementById("districtSelect").value;
+
+    const season =
+    document.getElementById("season").value;
+
+    const year =
+    document.getElementById("year").value;
+
+    const crop_mask = 
+    document.getElementById("cropMask").value;
+
+    const statusDiv =
+    document.getElementById("statusMessage");
+
+    statusDiv.style.display = "none";
+    statusDiv.className = "status-message";
+    statusDiv.innerHTML = "";
+
+
+    if(!state || !district || !season || !year || !crop_mask){
+
+        statusDiv.innerHTML =
+        "Please select State, District, Season, Year and Crop Mask first.";
+
+        statusDiv.classList.add("status-info");
+output_product
+        statusDiv.style.display = "block";return;
+
+    }
+
+    const response = await fetch(
+
+        `/api/get_dates?state=${encodeURIComponent(state)}&district=${encodeURIComponent(district)}&season=${encodeURIComponent(season)}&year=${year}&crop_mask=${encodeURIComponent(crop_mask)}`
+
+    );
+
+    const data = await response.json();
+
+    if(data.status === "error"){
+
+        statusDiv.innerHTML = data.message;
+
+        statusDiv.classList.add("status-error");
+
+        statusDiv.style.display = "block";
+
+        return;
+
+    }   
+
+    /* -------- Single-Date Analysis dropdown -------- */
+
+    dateDropdown.innerHTML = "";
+
+    let defaultOption =
+    document.createElement("option");
+
+    defaultOption.value = "";
+    defaultOption.text = "Select Observation Date";
+
+    dateDropdown.add(defaultOption);
+
+    data.available_dates.forEach(function(date){
+
+        let option =
+        document.createElement("option");
+
+        option.value = date;
+        option.text = date;
+
+        dateDropdown.add(option);
+
+    });
+
+    /* -------- Start Date -------- */
+
+    const startDate =
+    document.getElementById("startDate");
+
+    startDate.innerHTML = "";
+
+    let startDefault =
+    document.createElement("option");
+
+    startDefault.value = "";
+    startDefault.text = "Select Start Date";
+
+    startDate.add(startDefault);
+
+    data.available_dates.forEach(function(date){
+
+        let option =
+        document.createElement("option");
+
+        option.value = date;
+        option.text = date;
+
+        startDate.add(option);
+
+    });
+
+    /* -------- End Date -------- */
+
+    const endDate =
+    document.getElementById("endDate");
+
+    endDate.innerHTML = "";
+
+    let endDefault =
+    document.createElement("option");
+
+    endDefault.value = "";
+    endDefault.text = "Select End Date";
+
+    endDate.add(endDefault);
+
+    data.available_dates.forEach(function(date){
+
+        let option =
+        document.createElement("option");
+
+        option.value = date;
+        option.text = date;
+
+        endDate.add(option);
+
+    });
+
+    const statusBox =
+    document.getElementById("processing-status");
+
+    if(duration === "single_date"){
+
+        statusBox.innerHTML = `
+        ✅ Available dates loaded.<br>
+        📅 Select an Observation Date.<br>
+        ▶ Click GO again to generate the report.
+        `;
+
+    }
+
+    else{
+
+        statusBox.innerHTML = `
+        ✅ Available dates loaded.<br>
+        📅 Select Start Date and End Date.<br>
+        ▶ Click GO again to generate the cumulative report.
+        `;
+
+    }
+
+}
+
+async function handleGo(){
+    let duration =
+    document.getElementById("duration").value;
+    /* Load dates if not loaded */
+    if(document.getElementById("dateSection").style.display === "none"){
+        await durationChanged();
+        return;
+    }
+    /* ---------- Single-Date Analysis ---------- */
+    if(duration === "single_date"){
+        let selectedDate =
+        document.getElementById("availableDate").value;
+        if(selectedDate === ""){
+            alert("Please select an Observation Date.");
+            return;
+        }
+        generateReport();
+        return;
+    }
+    /* ---------- Multi-Date Analysis ---------- */
+    if(duration === "multi_date"){
+        let startDate =
+        document.getElementById("startDate").value;
+        let endDate =
+        document.getElementById("endDate").value;
+        if(startDate === "" || endDate === ""){
+
+            alert("Please select Start Date and End Date.");
+            return;
+        }
+        if(startDate > endDate){
+
+            alert("Start Date cannot be after End Date.");
+            return;
+        }
+        generateReport();
+    }
+}
+async function generateReport(){
+    let outputProduct =
+    document.getElementById("outputProduct").value;
+    let state =
+    document.getElementById("stateSelect").value;
+    let district =
+    document.getElementById("districtSelect").value;
+    let year =
+    document.getElementById("year").value;
+    let season =
+     document.getElementById("season").value;
+    let duration =
+     document.getElementById("duration").value;
+    let selectedDate =
+     document.getElementById("availableDate").value;
+    let startDate =
+      document.getElementById("startDate").value;
+    let endDate =
+      document.getElementById("endDate").value;
+    let cropMask =
+      document.getElementById("cropMask").value;
+
+    console.log("Crop Mask Selected:", cropMask)
+ 
+    let apiUrl = "/api/analyze";
+    if(!state){
+    alert("Please select State");
+    return;
+    }
+    if(!district){
+    alert("Please select District");
+    return;
+    }
+
+    if(!year){
+    alert("Please select Year");
+    return;
+    }
+    if(!season){
+    alert("Please select Season");
+    return;
+    }
+    if(duration === "single_date" && !selectedDate){
+    alert("Please select a date.");
+    return;
+
+}
+    console.log("Calling:", apiUrl);
+
+    const statusDiv = document.getElementById("statusMessage");
+
+    statusDiv.style.display = "none";
+    statusDiv.className = "status-message";
+    statusDiv.innerHTML = "";
+
+const statusBox = document.getElementById("processing-status");
+
+statusBox.innerHTML = "Starting analysis...";
+setTimeout(() => {
+    statusBox.innerHTML =
+    `
+    CHECKING THE IMAGE DATES AVAILABLE FOR THE SELECTED YEAR AND SEASON...<br>
+    `;
+}, 5000);
+setTimeout(() => {
+    statusBox.innerHTML =
+    `
+    ☁️ FILTERING BASED ON CLOUD COVER...<br>
+    `;
+}, 10000);
+setTimeout(() => {
+    statusBox.innerHTML =
+    `
+    🛰️ COMPUTING INDICES ...<br>
+    `;
+}, 20000);
+setTimeout(() => {
+    statusBox.innerHTML =
+    `
+    ✅ IMAGE AVAILABILITY CHECKED<br>
+    ✅ CLOUD FILTERING COMPLETED<br>
+    `;
+}, 30000);
+setTimeout(() => {
+    statusBox.innerHTML =
+    `
+    📊 PROCESSING FOR BURNT AREA ...
+    `;
+}, 40000);
+setTimeout(() => {
+    statusBox.innerHTML =
+    `
+    🗺️ VISUALIZING RESULTS...<br>
+    `;
+}, 50000);
+
+
+// ---------- API Call ----------
+
+let response;
+
+if(duration === "single_date"){
+
+    response = await fetch(
+
+        `${apiUrl}?state=${encodeURIComponent(state)}` +
+        `&district=${encodeURIComponent(district)}` +
+        `&year=${year}` +
+        `&season=${season}` +
+        `&duration=${duration}` +
+        `&selected_date=${selectedDate}` +
+        `&crop_mask=${encodeURIComponent(cropMask)}` +
+        `&output_product=${encodeURIComponent(outputProduct)}`
+
+    );
+
+}
+
+else{
+
+    response = await fetch(
+
+        `${apiUrl}?state=${encodeURIComponent(state)}` +
+        `&district=${encodeURIComponent(district)}` +
+        `&year=${year}` +
+        `&season=${season}` +
+        `&duration=${duration}` +
+        `&start_date=${startDate}` +
+        `&end_date=${endDate}` +
+        `&crop_mask=${encodeURIComponent(cropMask)}` +
+        `&output_product=${encodeURIComponent(outputProduct)}`
+
+    );
+
+}
+
+let data = await response.json();
+
+if (!response.ok) {
+
+    console.log(data);
+
+    alert(data.message);
+
+    if (data.offer_export) {
+
+        const exportNow = confirm(
+            "The requested analysis exceeded Google Earth Engine limits.\n\nWould you like to start an Earth Engine Export task instead?"
+        );
+
+        if (exportNow) {
+
+            // TODO: Call export API
+
+            console.log("User chose Export.");
+
+        }
+
+    }
+
+    return;
+
+}
+
+console.log(data);
+
+statusBox.innerHTML = `
+✅ Image availability checked<br>
+✅ Cloud filtering completed<br>
+✅ Indices computed<br>
+✅ Burnt area processed<br>
+🗺️ Visualizing results...<br>
+✅ Report generated successfully.
+`;
+
+console.log("Tile URL =", data.tile_url);
+console.log("Cumulative URL =", data.cumulative_tile_url);
+console.log("Duration =", duration);
+
+console.log("API DATA");
+console.log(data);
+
+console.log("Tile URL:", data.tile_url);
+
+let selectedTile = data.tile_url;
+
+if(selectedTile){
+
+    if (burntLayer) {
+        layerControl.removeLayer(burntLayer);
+    }
+
+    if (window.boundaryLayer) {
+        layerControl.removeLayer(window.boundaryLayer);
+    }
+
+    if(burntLayer){
+        map.removeLayer(burntLayer);
+    }
+
+    burntLayer = L.tileLayer(selectedTile,{
+        opacity:0.8
+    }).addTo(map);
+
+    console.log("Adding EE layer...");
+
+    layerControl.addOverlay(
+        burntLayer,
+        "Burnt Area"
+    );
+
+
+console.log("EE layer added.");
+console.log("Boundary URL:", data.boundary_url);
+console.log("Layer URL:", burntLayer._url);
+
+if(data.boundary_url){
+
+    if(window.boundaryLayer){
+        map.removeLayer(window.boundaryLayer);
+    }
+
+    window.boundaryLayer = L.tileLayer(data.boundary_url,{
+        opacity:1
+    }).addTo(map);
+
+    layerControl.addOverlay(
+        window.boundaryLayer,
+        "AOI Boundary"
+    )
+
+}else{
+
+    console.log("Boundary URL not received.");
+
+}
+}
+
+console.log("Received:", data);
+console.log("Reached report section");
+
+console.log("report =", document.getElementById("report"));
+console.log("ryear =", document.getElementById("ryear"));
+console.log("rseason =", document.getElementById("rseason"));
+console.log("rstate =", document.getElementById("rstate"));
+console.log("rdistrict =", document.getElementById("rdistrict"));
+console.log("rduration =", document.getElementById("rduration"));
+console.log("rlatestdate =", document.getElementById("rlatestdate"));
+console.log("ravgcloud =", document.getElementById("ravgcloud"));
+console.log("rburntarea_text =", document.getElementById("rburntarea_text"));
+
+document.getElementById("report").style.display = "block";
+
+// Use selected dropdown values
+document.getElementById("ryear").innerHTML = year;
+document.getElementById("rseason").innerHTML = season;
+
+document.getElementById("rstate").innerHTML = data.state;
+document.getElementById("rdistrict").innerHTML = data.district;
+document.getElementById("rcropmask").innerHTML = cropMask;
+
+if(duration === "single_date"){
+
+    document.getElementById("rduration").innerHTML =
+    "Single-Date Analysis";
+
+}
+
+else{
+
+    document.getElementById("rduration").innerHTML =
+    startDate + " to " + endDate;
+
+}
+
+if(duration === "multi_date"){
+    document.getElementById("rlatestdate").innerHTML =
+    "End of Season";
+}
+else{
+
+    document.getElementById("rlatestdate").innerHTML =
+    data.single_date;
+
+}
+
+if(duration === "multi_date"){
+    document.getElementById("ravgcloud").innerHTML =
+    "N/A (End of Season)";
+}
+
+else{
+
+    document.getElementById("ravgcloud").innerHTML =
+    data.avg_cloud;
+
+};
+
+document.getElementById("rburntarea_text").innerHTML =
+data.burnt_area + " ha";
+
+// Show Download PNG button
+document.getElementById("downloadPngBtn").style.display = "inline-block";
+
+document.getElementById("downloadPngBtn").onclick = function () {
+    window.open(data.png_url, "_blank");
+};
+
+console.log(data);
+}
+
+async function toggleDateDropdown(){
+
+    const duration =
+    document.getElementById("duration").value;
+
+    const container =
+    document.getElementById("dateContainer");
+
+    const dropdown =
+    document.getElementById("availableDate");
+
+    if(duration === "single_date"){
+
+        container.style.display = "block";
+
+        dropdown.innerHTML =
+        "<option>Loading...</option>";
+
+        const district =
+        document.getElementById("districtSelect").value;
+
+        const year =
+        document.getElementById("year").value;
+
+        const season =
+        document.getElementById("season").value;
+
+        if(!district || !year || !season){
+            return;
+        }
+
+        const state =
+        document.getElementById("stateSelect").value;
+
+        const apiUrl = "/api/get_dates";
+
+        const response = await fetch(
+
+        `${apiUrl}?state=${encodeURIComponent(state)}`
+        + `&district=${encodeURIComponent(district)}`
+        + `&year=${year}`
+        + `&season=${season}`
+
+        );
+
+        const dates =
+        await response.json();
+
+        dropdown.innerHTML="";
+
+        dates.forEach(function(d){
+
+            let option =
+            document.createElement("option");
+
+            option.value=d;
+            option.text=d;
+
+            dropdown.add(option);
+
+        });
+
+    }
+
+    else{
+
+        container.style.display="none";
+
+    }
+
+}
+
+var osm = L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        attribution: '&copy; OpenStreetMap contributors'
+    }
+);
+
+var map = L.map('map', {
+    center: [22.5937, 78.9629],
+    zoom: 5,
+    layers: [osm]
+});
+
+var marker;
+let stateLayer;
+let districtLayer;
+let burntLayer = null;
+
+let overlayMaps = {};
+let layerControl = L.control.layers(
+    {
+        "OpenStreetMap": osm
+    },
+    overlayMaps,
+    {
+        collapsed: false
+    }
+).addTo(map);
+
+
+// =========================================================
+// DISTRICT BOUNDARIES
+// =========================================================
+// Static all-India district boundary layer.
+// It is added to the layer control but NOT displayed initially.
+// =========================================================
+
+fetch('/static/India_Dist.geojson')
+    .then(response => {
+
+        if (!response.ok) {
+            throw new Error(
+                `Failed to load India_Dist.geojson: ${response.status}`
+            );
+        }
+
+        return response.json();
+
+    })
+    .then(districtData => {
+
+        console.log(
+            "District GeoJSON loaded:",
+            districtData.features.length,
+            "features"
+        );
+
+        districtLayer = L.geoJSON(
+            districtData,
+            {
+
+                style: {
+                    color: '#555555',
+                    weight: 1,
+                    fillOpacity: 0
+                },
+
+                onEachFeature: function(feature, layer) {
+
+                    if (
+                        feature.properties &&
+                        feature.properties.DISTRICT
+                    ) {
+
+                        layer.bindTooltip(
+                            feature.properties.DISTRICT,
+                            {
+                                permanent: false
+                            }
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+        // Add to layer control only.
+        // Do NOT call .addTo(map) here.
+        // Therefore the layer is OFF initially.
+        layerControl.addOverlay(
+            districtLayer,
+            "District Boundaries"
+        );
+
+        console.log(
+            "District Boundaries added to layer control."
+        );
+
+    })
+    .catch(error => {
+
+        console.error(
+            "District GeoJSON Error:",
+            error
+        );
+
+    });
+
+    
+map.on('mousemove', function(e){
+
+    document.getElementById("mouse-position").innerHTML =
+        "Latitude: " +
+        e.latlng.lat.toFixed(5) +
+        " | Longitude: " +
+        e.latlng.lng.toFixed(5);
+
+});
+
+async function generateSelectedDate(){
+
+    let district =
+    document.getElementById("districtSelect").value;
+
+    let year =
+    document.getElementById("year").value;
+
+    let season =
+    document.getElementById("season").value;
+
+    let selectedDate =
+    document.getElementById("dateSelect").value;
+
+    if(selectedDate==""){
+
+        alert("Please select a date");
+
+        return;
+    }
+
+    const state =
+    document.getElementById("stateSelect").value;
+
+    const apiUrl = "/api/analyze";
+
+    const response = await fetch(
+
+    `${apiUrl}?state=${encodeURIComponent(state)}`
+    + `&district=${encodeURIComponent(district)}`
+    + `&year=${year}`
+    + `&season=${season}`
+    + `&duration=single_date`
+    + `&selected_date=${selectedDate}`
+
+    );
+
+    const data = await response.json();
+
+    console.log(data);
+
+    if(data.message){
+
+        statusDiv.innerHTML = data.message;
+
+        statusDiv.classList.add("status-success");
+
+        statusDiv.style.display = "block";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+```
+ 
